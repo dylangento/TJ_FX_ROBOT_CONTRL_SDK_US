@@ -18,16 +18,16 @@
 # 一、SDK文档
     请阅读SDK文档，详细全面了解机器人使用逻辑，接口的功能，以及更新和注意事项。
 
-[SDK首页](../README.md)
+[SDK首页](../README_CN.md)
 
 
-[C++ 控制SDK 文档](../c++_doc_contrl.md)
+[C++ 控制SDK 文档](../c++_doc_contrl_CN.md)
 
-[PYTHON 控制SDK 文档](../python_doc_contrl.md)
+[PYTHON 控制SDK 文档](../python_doc_contrl_CN.md)
 
-[C++ 运动计算SDK 文档]( ../c++_doc_kine.md)
+[C++ 运动计算SDK 文档](../c++_doc_kine_CN.md)
 
-[PYTHON 运动计算SDK 文档](../python_doc_kine.md)
+[PYTHON 运动计算SDK 文档](../python_doc_kine_CN.md)
 
 # 二、 SDK库文件编译
     控制SDK头文件：MarvinSDK.h

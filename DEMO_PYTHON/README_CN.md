@@ -13,13 +13,13 @@
 ## 一、SDK文档
     请阅读SDK文档，详细全面了解机器人使用逻辑，接口的功能，以及更新和注意事项。
 
-[SDK首页](../README.md)
+[SDK首页](../README_CN.md)
 
-[C++ 控制SDK 文档](../c++_doc_contrl.md)
-[PYTHON 控制SDK 文档](../python_doc_contrl.md)
+[C++ 控制SDK 文档](../c++_doc_contrl_CN.md)
+[PYTHON 控制SDK 文档](../python_doc_contrl_CN.md)
 
-[C++ 运动计算SDK 文档]( ../c++_doc_kine.md)
-[PYTHON 运动计算SDK 文档](../python_doc_kine.md)
+[C++ 运动计算SDK 文档](../c++_doc_kine_CN.md)
+[PYTHON 运动计算SDK 文档](../python_doc_kine_CN.md)
 
 ## 二、SDK库文件夹下文件说明
     SDK_PYTHON文件下文件为：
@@ -28,30 +28,22 @@
     |————SDK_PYTHON
             |————fx_kine.py #计算接口
             |————fx_robot.py #控制接口
-            |————fx_interference.py #干涉检测(碰撞检测)接口
             |————libKine.dll #windows下计算库动态库
             |————libKine.so #linux下计算库动态库
             |————libMarvinSDK.dll #windows下控制库动态库
             |————libMarvinSDK.so #linux下控制库动态库
-            |————libInterfCheck.dll #windows下干涉检测库动态库
-            |————libInterfCheck.so #linux下干涉检测库动态库
 
     注意：请检查SDK_PYTHON下动态库是否为最新编译
 
 ## 三、 SDK库
     SDK_PYTHON为天机双臂机器人和人形机器人基于python开发的SDK，其分为:
         控制SDK：SDK_PYTHON/fx_robot.py 
-        运动学计算的SDK:SDK_PYTHON/fx_kine.py
-        和干涉检测(碰撞检测)SDK:SDK_PYTHON/fx_interference.py
+        和运动学计算的SDK:SDK_PYTHON/fx_kine.py
 
 
 ### 3.1使用自动化编译脚本：
-        master分支下marvinSDK_windows_100343.bat运行可自动编译C++和python调用的dll文件(含干涉检测库libInterfCheck.dll)
-        master分支下marvinSDK_ubuntu_100343.sh运行可自动编译C++和python调用的so文件(含干涉检测库libInterfCheck.so)
-
-        单独编译干涉检测库可使用:
-            interferenceCheck_windows.bat  #编译libInterfCheck.dll
-            interferenceCheck_ubuntu.sh    #编译libInterfCheck.so
+        master分支下marvinSDK_windows.bat运行可自动编译C++和python调用的dll文件
+        master分支下marvinSDK_ubuntu.sh运行可自动编译C++和python调用的so文件
 
 ### 3.2.1 编译so动态库:
     linux设备编译:
@@ -139,18 +131,18 @@
         showcase_pln_cart_positionMode_with_break.py
 ### 28. 关节力矩转末端六维力
         showcase_jointsTorque2EefTorque.py
-### 29. 立场控制
-        showcase_force_field_control.py
-### 30. 运动过程中，停止运动案例（非急停，非下使能）
-        showcase_stop_run_AB.py
-### 31. 阻抗刚度阻尼数据回读
-        showcase_validate_stiffness_info.cpp
-        
-## 五、 干涉检测(碰撞检测)showcases
-### 1. 双臂进入关节拖动模式, 获取当前关节做碰撞检测(对应DEMO_C++/showcase_drag_interference.cpp)
-        showcase_drag_interference.py
 
-## 六. 计算showcases
+# 建议运行顺序：29->30->31->32
+### 29. 双臂协作关节空间同步规划运动（setPln_joint_AB）
+        showcase_pln_joint_to_joint_two_arms.py
+### 30. 双臂协作关节空间直线规划同步运动（movL_KeepJA + setPln_Cart_AB）
+        showcase_pln_joint_to_joints_linear_two_arms.py
+### 31. 双臂协作笛卡尔空间直线规划同步运动（movLA + setPln_Cart_AB）
+        showcase_pln_cartesian_linear_two_arms.py
+### 32. 双臂协作多点直线规划同步运动（multi_movL + setPln_Cart_AB）
+        showcase_pln_multi_segment_linear_two_arms.py
+
+## 五. 计算showcases
 
 ### 1. 计算SDK 功能模块完整演示
             showcase_kinematics_all_functions.py
@@ -158,7 +150,7 @@
 ### 2. 计算逆解失败总结
             showcase_ik_failed_conclusion.py
 
-### 3. 两条手臂在三种情景下同时计算正解和逆解
+### 3. 两条手臂同时计算
             showcase_kine_two_arms.py
 
 ### 4. CCS右臂工具动力学辨识演示脚本
@@ -181,14 +173,3 @@
 
 ### 10.在线多点规划，控制器以50HZ执行
             showcase_pln_cart_multi-segment_positionMode.py
-
-# 建议运行顺序：11->12->13->14
-### 11. 双臂协作关节空间同步规划运动（setPln_joint_AB）
-        showcase_pln_joint_to_joint_two_arms.py
-### 12. 双臂协作关节空间直线规划同步运动（movL_KeepJA + setPln_Cart_AB）
-        showcase_pln_joint_to_joints_linear_two_arms.py
-### 13. 双臂协作笛卡尔空间直线规划同步运动（movLA + setPln_Cart_AB）
-        showcase_pln_cartesian_linear_two_arms.py
-### 14. 双臂协作多点直线规划同步运动（multi_movL + setPln_Cart_AB）
-        showcase_pln_multi_segment_linear_two_arms.py
-

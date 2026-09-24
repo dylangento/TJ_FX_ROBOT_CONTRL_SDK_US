@@ -8,7 +8,6 @@
         这些demo的使用逻辑和使用参数为研发测试使用开发的，仅供参考，并非实际生产代码。
             比如:
                 a.速度百分比和加速度百分比为了安全我们都设置为百分之十：10，在您经过丰富的测试后可调到全速100。
-                c.从disable到各种控制模式切换时间预留1秒，给伺服驱动留足响应时间。
                 b.参数设置之间sleep 1秒或者500毫秒， 实际上参数设置之间小睡1毫秒即可。
                 c.设置目标关节后，测试里小睡几秒等机械臂运行到位，而在生产时可以通过循环订阅机械臂当前位置判断是否走到指定点位或者通过订阅低速标志来判断。
                 d.刚度系数和阻尼系数的设置也是参考值，不同的控制器版本可能值会有提升，详询技术人员。
@@ -27,7 +26,7 @@
             2.使用操作上位机软件后再根据您的控制需求开发业务和生产脚本。
 
      机器人控制的主逻辑为:
-        UDP连接机器人,通过接收数的更新据确认为有效连接
+        UDP连接机器人,通过接收数据的更新确认为有效连接
         |
         设置预期控制状态下对应的参数（速度，加速度，刚度，阻尼等），再设置控制状态
         |
@@ -118,14 +117,11 @@ time.sleep(1)
 
 
 ### 关节阻抗模式（Joint Impedance Mode）
-
-    特别注意：在关节阻抗模式下，为了限位安全，各个关节会在ini配置范围内正负限位各回缩1.5度。
-    
     在关节空间内建立力矩与位置偏差的动态关系，表现为“弹簧-阻尼”特性。
 
     用户需要先设置参数：
         每个关节的刚度（范围0~22， 单位N*m/deg），刚度越高关节“越硬”
-        每个关节的阻尼系数（数值为正，建议值0.3）
+        每个关节的阻尼系数（范围0~1，建议值0.3）
     
     阻尼越大，物体振幅减小越快，但对力、位移的响应迟缓，运动时感觉阻力大，有粘滞感； 阻尼越小，减震效果减弱，但运动阻力小，更流畅，停止到位置时有余震感。
     关节阻抗下阻尼解释：，关节阻抗下阻尼为在模态空间中计算的阻尼，可以看成关节空间中的2阶系统的阻尼响应  输入1就为临界阻尼，大于1为过阻尼，小于1为欠阻尼系统，这个针对阶跃响应分析，连续系统，欠阻尼就可以保证一定的稳定性
@@ -178,9 +174,9 @@ time.sleep(1)
     在末端笛卡尔空间（X/Y/Z方向及旋转轴以及零空间）构建柔顺控制模型，使末端对外力呈现可调的刚度和阻尼特性。
     
     用户需要先设置参数：
-        平移刚度（范围 0~1200 N*m）和阻尼（数值为正，建议0.3）；
-        旋转刚度（范围 0~600 N*m/rad）和阻尼（数值为正，建议0.3 ）
-        零空间总和刚度参数（范围20~100 N*m/rad）和零空间总和阻尼系数（数值为正，建议0.3）。
+        平移刚度（范围 0~1200 N*m）和阻尼（范围0~1，建议0.3）；
+        旋转刚度（范围 0~600 N*m/rad）和阻尼（范围0~1，建议0.3 ）
+        零空间总和刚度参数（范围20~100 N*m/rad）和零空间总和阻尼系数（范围0~1，建议0.3）。
 
     笛卡尔阻抗下阻尼解释：笛卡尔阻抗下阻尼为在笛卡尔模态空间中计算的阻尼，可以看成笛卡尔节空间中的2阶系统的阻尼响应  输入1就为临界阻尼，大于1为过阻尼，小于1为欠阻尼系统，这个针对阶跃响应分析，连续系统，欠阻尼就可以保证一定的稳定性
         
@@ -436,56 +432,19 @@ robot.send_cmd()
 #等待轨迹执行完毕
 ```
 
-## 机器人运动学和规划库简介
-
-    KinematicsSDK运动学规划库包括双臂以下功能：
-
-    - 关节转雅可比矩阵
-    - 工具动力学辨识
-    - 工具运动学信息的设置（TCP相对于末端法兰的旋转和偏移）以及移除
-    - 正解
-    - 逆解
-    - 正解并获取零空间
-    - 逆解带零空间调整
-    - 直线规划 （多轴同步）
-    - 直线规划保持起始和结束关节构形 （多轴同步）
-    - 多段规划 （多轴同步，可约束零空间）
-    - 双臂协同规划 （多轴同步）
-
-使用流程为：
-
-    首先注意：
-        1. KinematicsSDK必须区分左右臂，两个臂的解算需要独立。
-        2. 选择对应使用机型的配置文件。运动规划的配置文件由供应商提供，格式为*.MvKDCfg，现有多个版本：
-                ccs 6公斤的机型的有两个版本: 3.1(计算配置文件为ccs_m6_31.MvKDCfg), 4.0(计算配置文件为ccs_m6_40.MvKDCfg)，两个版本的参数不一样
-                ccs 3公斤的机型的计算配置文件为ccs_m3.MvKDCfg；
-                srs机型为srs.MvKDCfg.
-
-    1 通过文件方式导入配置文件
-
-    2 如果带工具，提前将工具相对于法兰的旋转和偏移设置进去，这样正解矩阵是解算到TCP中心的。
-
-    3 选择TCP相对机器人基座的移动解算方式， 
-        - 单独点位逆运动学解算（零空间可调整）到关节空间，再使用控制接口下关节运动指令。
-        - 用户规划笛卡尔空间的轨迹，通过逆解将笛卡尔点位解算到关节空间（零空间可调整），按照设定频率下发点位实现控制速度和轨迹。
-
-        - 控制的轨迹比较规范，如重复直线点位，多段直线点位，双臂协同运动等需求，可通过提供的四种规划接口规划轨迹，轨迹的运行有两种方式：
-            轨迹包全部发送后执行：预先切换为位置模式（位置模式的速度和加速度都设为100%），轨迹规划为50HZ，通过控制sdk下发，控制器将自动以50HZ运行。
-            实时点位下发执行：预先切换为位置模式和阻抗模式下均可（速度加速度为100%，阻抗参数预先调试设置好），规划的点位的频率不超过200HZ，按照规划的频率方式下发点位，该方式要求通讯稳定，上位机实时性好。
-
 
 
 ## 1.1 机器人控制SDK文档：
-[C++ 控制SDK 文档](c++_doc_contrl.md)
+[C++ 控制SDK 文档](c++_doc_contrl_CN.md)
 
-[PYTHON 控制SDK 文档](python_doc_contrl.md)
+[PYTHON 控制SDK 文档](python_doc_contrl_CN.md)
 
     文档内含DEMO说明
 
 ## 1.2 机器人计算SDK文档：
-[C++ 运动计算SDK 文档]( c++_doc_kine.md)
+[C++ 运动计算SDK 文档](c++_doc_kine_CN.md)
 
-[PYTHON 运动计算SDK 文档](python_doc_kine.md)
+[PYTHON 运动计算SDK 文档](python_doc_kine_CN.md)
 
     文档内含DEMO说明
 
@@ -546,14 +505,14 @@ robot.send_cmd()
 ### 2.3 使用案列
     LINUX:
         C++: 
-            ./DEMO_C++/readme.md
-        PYTHON 代码跨平台, 参考DEMO_PYTHON/readme.md
+            ./DEMO_C++/README_CN.md
+        PYTHON 代码跨平台, 参考DEMO_PYTHON/README_CN.md
 
     WINDOWS:
 
         C++: 
-            ./DEMO_C++/readme.md
-        PYTHON 代码跨平台, 参考DEMO_PYTHON/readme.md
+            ./DEMO_C++/README_CN.md
+        PYTHON 代码跨平台, 参考DEMO_PYTHON/README_CN.md
 
 
 ### 2.4 不使用动态库，源码调用
@@ -600,9 +559,9 @@ robot.send_cmd()
 ## 3.2 控制SDK
 ### 控制SDK新增简明接口
 # 为了更简明地使用控制SDK，我们特别提供了简明式接口，
-[原SDK接口介绍](c++_doc_contrl.md#L118)
+[原SDK接口介绍](c++_doc_contrl_CN.md#L118)
 
-[简明式接口介绍](c++_doc_contrl.md#L840)
+[简明式接口介绍](c++_doc_contrl_CN.md#L840)
 
 [控制SDK MarvinSDK.h](contrlSDK/MarvinSDK.h)
 
@@ -795,7 +754,7 @@ robot.send_cmd()
              ARM_ERR_InvalidPVT = 3,//"PVT异常"  				1) PVT模式内部读取数据错误，长度不符, 2) 位置模式时linux系统调度导致PSI进程和SI进程数据交互错误
              ARM_ERR_RequestPositionMode = 4,//"请求进位置失败" 	1) 伺服初始化状态错误，2) 伺服状态正在切换，3) 编码器状态错误，4) 伺服反馈状态切换失败，5) 处于急停状态，6) 100341版本以前原因同6
              ARM_ERR_PositionModeOK = 5,//"进位置失败" 			1) 伺服反馈切换运行模式失败，2) 电机状态错误，3) 控制器系统内存状态错误，4) 控制器内部手臂数量设置错误
-             ARM_ERR_RequestSensorMode = 6,//"请求进扭矩失败" 	1)未设置工具动力学参数；2)轴外力检测不通过（日志查看）；3)内外编检查不通过；4)其他原因同4、5
+             ARM_ERR_RequestSensorMode = 6,//"请求进扭矩失败" 	1) 未设置工具动力学参数，2) 手臂与外界环境处于硬接触状态，3) 其他原因同4、5
              ARM_ERR_SensorModeOK = 7,//"进扭矩失败" 			原因同4、5
              ARM_ERR_RequestEnableServo = 8,//"请求上伺服失败" 	原因同4、5
              ARM_ERR_EnableServoOK = 9,//"上伺服失败" 			原因同4、5
@@ -806,8 +765,6 @@ robot.send_cmd()
              ARM_ERR_Emcy = 13, //"急停"
              ARM_DYNA_FLOAT_NO_GYRO = 14,//"配置文件选择了浮动基座选项，但是实际没有IMU硬件接入控制器"
              ARM_ERR_PdoAbnormal = 15, //"PDO工作不正常"
-             ARM_ERR_AxisIsVirtual = 16,       //手臂为虚拟轴,虚拟轴是因为控制器启动时未能在程序启动时检测到从站，检测手臂是否与控制器同时上电,
-
 
 
     python：订阅数据a_state=sub_data["states"][0]["cur_state"]的值可以看到当前伺服状态：
@@ -824,23 +781,20 @@ robot.send_cmd()
 
 
         订阅数据a_state=sub_data["states"][0]["err_code"]的值可以看到当前机械臂的错误状态：
-             ARM_ERR_BusPhysicAbnoraml = 1, //"总线拓扑异常" 	EtherCAT通讯处于断开状态等错误状态
-             ARM_ERR_ServoError = 2,//"伺服故障"  				1) 某个轴处于故障状态, 2) 轴参数配置错误, 3) 轴通讯错误
-             ARM_ERR_InvalidPVT = 3,//"PVT异常"  				1) PVT模式内部读取数据错误，长度不符, 2) 位置模式时linux系统调度导致PSI进程和SI进程数据交互错误
-             ARM_ERR_RequestPositionMode = 4,//"请求进位置失败" 	1) 伺服初始化状态错误，2) 伺服状态正在切换，3) 编码器状态错误，4) 伺服反馈状态切换失败，5) 处于急停状态，6) 100341版本以前原因同6
-             ARM_ERR_PositionModeOK = 5,//"进位置失败" 			1) 伺服反馈切换运行模式失败，2) 电机状态错误，3) 控制器系统内存状态错误，4) 控制器内部手臂数量设置错误
-             ARM_ERR_RequestSensorMode = 6,//"请求进扭矩失败" 	1)未设置工具动力学参数；2)轴外力检测不通过（日志查看）；3)内外编检查不通过；4)其他原因同4、5
-             ARM_ERR_SensorModeOK = 7,//"进扭矩失败" 			原因同4、5
-             ARM_ERR_RequestEnableServo = 8,//"请求上伺服失败" 	原因同4、5
-             ARM_ERR_EnableServoOK = 9,//"上伺服失败" 			原因同4、5
-
-             ARM_ERR_RequestDisableServo = 10, //"请求下伺服失败 原因同4、5
-             ARM_ERR_DisableServoOK = 11, //"下伺服失败" 		原因同4、5
-             ARM_ERR_InvalidSubState = 12, //"内部错" 			1) 操作系统内存错误，调度错误，2) 变量值计算错误，3) 某些内存指针为空
+             ARM_ERR_BusPhysicAbnoraml = 1, //"总线拓扑异常"
+             ARM_ERR_ServoError = 2,//"伺服故障"
+             ARM_ERR_InvalidPVT = 3,//"PVT异常"
+             ARM_ERR_RequestPositionMode = 4,//"请求进位置失败"
+             ARM_ERR_PositionModeOK = 5,//"进位置失败"
+             ARM_ERR_RequestSensorMode = 6,//"请求进扭矩失败"
+             ARM_ERR_SensorModeOK = 7,//"进扭矩失败"
+             ARM_ERR_RequestEnableServo = 8,//"请求上伺服失败"
+             ARM_ERR_EnableServoOK = 9,//"上伺服失败"
+             ARM_ERR_RequestDisableServo = 10, //"请求下伺服失败
+             ARM_ERR_DisableServoOK = 11, //"下伺服失败"
+             ARM_ERR_InvalidSubState = 12, //"内部错"
              ARM_ERR_Emcy = 13, //"急停"
-             ARM_DYNA_FLOAT_NO_GYRO = 14,//"配置文件选择了浮动基座选项，但是实际没有IMU硬件接入控制器"
-             ARM_ERR_PdoAbnormal = 15, //"PDO工作不正常"
-             ARM_ERR_AxisIsVirtual = 16,       //手臂为虚拟轴,虚拟轴是因为控制器启动时未能在程序启动时检测到从站，检测手臂是否与控制器同时上电,
+             ARM_DYNA_FLOAT_NO_GYRO = 14,//"配置文件选择了浮动基座选项，但是UMI设置在配置文件未开"
 
         获取错误用error_codes=get_servo_error_code('A')
         对照伺服报错的PDF看啥错
@@ -857,17 +811,6 @@ robot.send_cmd()
         注意看控制模组提供的指令协议：
             32位 CANID 如果为0x01, 按HEX发送为：01 00 00 00
             64位 CANID 如果为0x01, 按HEX发送为：01 00
-
-    8 工具动力学辨识问题：
-        问题一： 轨迹正常运行，但是辨识结果报错，显示：ret=4, 采集时间不够，缺少有效数据。
-        解决方法：这是控制器系统和SDK兼容导致，100343007以上系统 + 100343007以上SDK可解决
-
-        问题二：加载轨迹后不运行，控制器显示：Load /home/FUSION/Config/pvt/user0/*.txt to memory failed 以及 no pvt file[0] to run
-        解决方法：轨迹文件是否在winodws上打开过，行尾换行符变成了CRLF（windows系统换行符）， 请将文件行尾符换成LF (linux换行符)
-
-    9 PVT轨迹运行问题：加载轨迹后不运行，控制器显示：Load /home/FUSION/Config/pvt/user0/*.txt to memory failed 以及 no pvt file[0] to run
-
-        解决方法：轨迹文件是否在winodws上打开过，行尾换行符变成了CRLF（windows系统换行符）， 请将文件行尾符换成LF (linux换行符)
 
 ## 📄 许可证
 
