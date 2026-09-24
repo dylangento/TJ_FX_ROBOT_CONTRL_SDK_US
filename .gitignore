@@ -13,3 +13,7 @@ DEMO_PYTHON/*.txt
 DEMO_PYTHON/*.csv
 debug/
 my_folder/
+
+# Exclude Chinese JMDT and Marvin PDF manuals, including future versions.
+/JMDT*说明书*.pdf
+/[Mm]arvin*说明书*.pdf
