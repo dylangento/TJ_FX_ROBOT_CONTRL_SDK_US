@@ -1,10 +1,20 @@
 **🌐 Language / 语言:** [English](README_EN.md) | [中文 (Chinese)](README_CN.md)
 
-﻿# This project is the open-source repository for Tianji MARVIN-series robots
+# Tianji MARVIN Robot Control SDK
 
-# This document contains: I. SDK overview, II. Compilation methods, III. SDK updates, IV. Controller version updates, V. App updates, VI. Usage precautions, VII. Robot errors and remedies
+Open-source control and kinematics SDK for Tianji MARVIN-series robots, covering C++/Python usage on Windows/Linux.
 
-# ATTENTION
+## Contents
+
+- [I. SDK Overview](#i-sdk-overview)
+- [II. Compilation Methods](#ii-compilation-methods)
+- [III. SDK Updates](#iii-sdk-updates)
+- [IV. Controller Version Updates](#iv-controller-version-updates)
+- [V. App Updates](#v-app-updates)
+- [VI. Precautions](#vi-precautions)
+- [VII. Main Problems and Solutions](#vii-main-problems-and-solutions)
+
+## Attention
     1. First become familiar with MarvinPlatform. Using the app will help you understand how to operate the Marvin robot and make subsequent code development easier.
     2. DEMO_C++/ and DEMO_PYTHON/ contain interface usage demos. The top of each demo explains the example and its usage logic. Be sure to read this first, then modify the demo for your situation before running it.
         The logic and parameters in these demos were developed for research and development testing. They are for reference only and are not production code.
