@@ -1,3 +1,5 @@
+**🌐 Language / 语言:** [English](README_EN.md) | [中文 (Chinese)](README_CN.md)
+
 # 本项目为天机MARVIN系列机器人的开源仓库
 
 # 本文档包含:一、SDK简要说明，二、编译方法，三、SDK更新，四、控制器版本更新，五、APP更新，六、使用注意，七、机器人报错及处理措施
